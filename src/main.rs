@@ -2,6 +2,7 @@
 use std::env;
 
 use crate::calendar::{SaisonkalenderGemuese, SaisonkalenderObst, SaisonkalenderSalat};
+use crate::gemuese::{Gemuese, Obst, Salat};
 use futures::StreamExt;
 use telegram_bot::*;
 
@@ -66,7 +67,7 @@ async fn main() -> Result<(), Error> {
                 // Print received text message to stdout.
                 println!("<{}>: {}", &message.from.first_name, data);
 
-                let command = AllowedCommands::from(data.clone());
+                let command = AllowedCommands::from(data.to_lowercase().clone());
 
                 let mut reply = String::new();
 
@@ -162,9 +163,45 @@ async fn main() -> Result<(), Error> {
                             }
                         }
                     }
-                    AllowedCommands::Other(_) => {
-                        // TODO: Add option to search for specific items and get their dates!
-                        reply += "Ich kann mit diesem Befehl (noch) nichts anfangen, tut mir leid!"
+                    AllowedCommands::Other(s) => {
+                        match Salat::try_from(s.as_str()) {
+                            Ok(s) => {
+                                let months = sks.get_months_for(&s);
+                                reply += &format!("{:?} hat Saison in den folgenden Monaten:\n", s);
+                                months.iter().for_each(|m| reply += &format!("{:?}\n", m));
+                            }
+                            Err(_) => {
+                                match Obst::try_from(s.as_str()) {
+                                    Ok(o) => {
+                                        let months = sko.get_months_for(&o);
+                                        reply += &format!(
+                                            "{:?} hat Saison in den folgenden Monaten:\n",
+                                            o
+                                        );
+                                        months.iter().for_each(|m| reply += &format!("{:?}\n", m));
+                                    }
+                                    Err(_) => {
+                                        match Gemuese::try_from(s.as_str()) {
+                                            Ok(g) => {
+                                                let months = skg.get_months_for(&g);
+                                                reply += &format!(
+                                                    "{:?} hat Saison in den folgenden Monaten:\n",
+                                                    g
+                                                );
+                                                months
+                                                    .iter()
+                                                    .for_each(|m| reply += &format!("{:?}\n", m));
+                                            }
+                                            Err(_) => {
+                                                // TODO: Levenshtein distance check
+
+                                                reply += "Ich kann mit diesem Befehl (noch) nichts anfangen, tut mir leid!"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 

@@ -210,6 +210,10 @@ impl SaisonkalenderGemuese {
 
         Some(seasonal_gemuese)
     }
+
+    pub fn get_months_for(&self, gemuese: &Gemuese) -> Vec<Month> {
+        self.frisch[gemuese].clone()
+    }
 }
 
 impl SaisonkalenderObst {
@@ -269,6 +273,10 @@ impl SaisonkalenderObst {
         }
 
         Some(seasonal_obst)
+    }
+
+    pub fn get_months_for(&self, obst: &Obst) -> Vec<Month> {
+        self.frisch[obst].clone()
     }
 }
 
@@ -350,6 +358,10 @@ impl SaisonkalenderSalat {
         }
 
         Some(seasonal_salat)
+    }
+
+    pub fn get_months_for(&self, salat: &Salat) -> Vec<Month> {
+        self.frisch[salat].clone()
     }
 }
 
