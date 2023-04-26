@@ -382,3 +382,27 @@ fn get_current_month() -> Option<Month> {
         _ => None,
     }
 }
+
+pub trait GermanString {
+    fn to_german_string(&self) -> String;
+}
+
+impl GermanString for Month {
+    fn to_german_string(&self) -> String {
+        match self {
+            January => "Januar",
+            February => "Februar",
+            March => "März",
+            April => "April",
+            May => "Mai",
+            June => "Juni",
+            July => "Juli",
+            August => "August",
+            September => "September",
+            October => "Oktober",
+            November => "November",
+            December => "Dezember",
+        }
+        .to_owned()
+    }
+}

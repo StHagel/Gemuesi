@@ -1,13 +1,20 @@
 // TODO: Better logging!
 use std::env;
 
-use crate::calendar::{SaisonkalenderGemuese, SaisonkalenderObst, SaisonkalenderSalat};
+use crate::calendar::{
+    GermanString, SaisonkalenderGemuese, SaisonkalenderObst, SaisonkalenderSalat,
+};
 use crate::gemuese::{Gemuese, Obst, Salat};
+
 use futures::StreamExt;
+use levenshtein::levenshtein;
+use strum::IntoEnumIterator;
 use telegram_bot::*;
 
 mod calendar;
 mod gemuese;
+
+const LEVENSHTEIN_THRESHOLD: usize = 3;
 
 #[derive(Debug, Eq, PartialEq, Hash)]
 enum AllowedCommands {
@@ -164,42 +171,68 @@ async fn main() -> Result<(), Error> {
                         }
                     }
                     AllowedCommands::Other(s) => {
-                        match Salat::try_from(s.as_str()) {
-                            Ok(s) => {
-                                let months = sks.get_months_for(&s);
-                                reply += &format!("{:?} hat Saison in den folgenden Monaten:\n", s);
-                                months.iter().for_each(|m| reply += &format!("{:?}\n", m));
-                            }
-                            Err(_) => {
-                                match Obst::try_from(s.as_str()) {
-                                    Ok(o) => {
-                                        let months = sko.get_months_for(&o);
-                                        reply += &format!(
-                                            "{:?} hat Saison in den folgenden Monaten:\n",
-                                            o
+                        if let Ok(s2) = Salat::try_from(s.as_str()) {
+                            let months = sks.get_months_for(&s2);
+                            reply += &format!("{:?} hat Saison in den folgenden Monaten:\n", s2);
+                            months
+                                .iter()
+                                .for_each(|m| reply += &(m.to_german_string() + "\n"));
+                        } else if let Ok(o) = Obst::try_from(s.as_str()) {
+                            let months = sko.get_months_for(&o);
+                            reply += &format!("{:?} hat Saison in den folgenden Monaten:\n", o);
+                            months
+                                .iter()
+                                .for_each(|m| reply += &(m.to_german_string() + "\n"));
+                        } else if let Ok(g) = Gemuese::try_from(s.as_str()) {
+                            let months = skg.get_months_for(&g);
+                            reply += &format!("{:?} hat Saison in den folgenden Monaten:\n", g);
+                            months
+                                .iter()
+                                .for_each(|m| reply += &(m.to_german_string() + "\n"));
+                        } else {
+                            let mut hit = false;
+                            Gemuese::iter().for_each(|g| {
+                                Obst::iter().for_each(|o| {
+                                    Salat::iter().for_each(|s2| {
+                                        let (g_string, o_string, s_string) = (
+                                            format!("{g:?}").to_lowercase(),
+                                            format!("{o:?}").to_lowercase(),
+                                            format!("{s2:?}").to_lowercase(),
                                         );
-                                        months.iter().for_each(|m| reply += &format!("{:?}\n", m));
-                                    }
-                                    Err(_) => {
-                                        match Gemuese::try_from(s.as_str()) {
-                                            Ok(g) => {
-                                                let months = skg.get_months_for(&g);
+                                        if !hit {
+                                            let str_to_append =
+                                                if levenshtein(g_string.as_str(), s.as_str())
+                                                    < LEVENSHTEIN_THRESHOLD
+                                                    && !hit
+                                                {
+                                                    hit = true;
+                                                    format!("{g:?}")
+                                                } else if levenshtein(o_string.as_str(), s.as_str())
+                                                    < LEVENSHTEIN_THRESHOLD
+                                                    && !hit
+                                                {
+                                                    hit = true;
+                                                    format!("{o:?}")
+                                                } else if levenshtein(s_string.as_str(), s.as_str())
+                                                    < LEVENSHTEIN_THRESHOLD
+                                                    && !hit
+                                                {
+                                                    hit = true;
+                                                    format!("{s:?}")
+                                                } else {
+                                                    "".to_owned()
+                                                };
+                                            if hit {
                                                 reply += &format!(
-                                                    "{:?} hat Saison in den folgenden Monaten:\n",
-                                                    g
+                                                    "\nMeintest du vielleicht:\n{str_to_append}"
                                                 );
-                                                months
-                                                    .iter()
-                                                    .for_each(|m| reply += &format!("{:?}\n", m));
-                                            }
-                                            Err(_) => {
-                                                // TODO: Levenshtein distance check
-
-                                                reply += "Ich kann mit diesem Befehl (noch) nichts anfangen, tut mir leid!"
                                             }
                                         }
-                                    }
-                                }
+                                    });
+                                });
+                            });
+                            if !hit {
+                                reply += "Ich kann mit diesem Befehl (noch) nichts anfangen, tut mir leid!";
                             }
                         }
                     }

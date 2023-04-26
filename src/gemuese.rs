@@ -1,4 +1,6 @@
-#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+use strum_macros::EnumIter;
+
+#[derive(Clone, Debug, Eq, PartialEq, Hash, EnumIter)]
 pub enum Gemuese {
     Aubergine,
     Blumenkohl,
@@ -40,7 +42,7 @@ pub enum Gemuese {
     Zwiebeln,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Debug, Eq, PartialEq, Hash, EnumIter)]
 pub enum Obst {
     Apfel,
     Aprikose,
@@ -62,7 +64,7 @@ pub enum Obst {
     Zwetschgen,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Debug, Eq, PartialEq, Hash, EnumIter)]
 pub enum Salat {
     Batavia,
     Chicoree,
