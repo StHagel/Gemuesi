@@ -1,9 +1,8 @@
+#![feature(specialization)]
 // TODO: Better logging!
 use std::env;
 
-use crate::calendar::{
-    GermanString, SaisonkalenderGemuese, SaisonkalenderObst, SaisonkalenderSalat,
-};
+use crate::calendar::{GermanString, Saisonkalender};
 use crate::gemuese::{Gemuese, Obst, Salat};
 
 use futures::StreamExt;
@@ -57,9 +56,9 @@ async fn main() -> Result<(), Error> {
     //    log4rs::config::Deserializers::default(),
     //).unwrap();
 
-    let skg = SaisonkalenderGemuese::new();
-    let sko = SaisonkalenderObst::new();
-    let sks = SaisonkalenderSalat::new();
+    let skg = Saisonkalender::new();
+    let sko = Saisonkalender::new();
+    let sks = Saisonkalender::new();
 
     let token = env::var("TELEGRAM_BOT_TOKEN").expect("TELEGRAM_BOT_TOKEN not set");
     let api = Api::new(token);
@@ -80,8 +79,8 @@ async fn main() -> Result<(), Error> {
 
                 match command {
                     AllowedCommands::Gemuese => {
-                        let seasonal_gemuese_frisch = skg.get_seasonal_gemuese_frisch();
-                        let seasonal_gemuese_lager = skg.get_seasonal_gemuese_lager();
+                        let seasonal_gemuese_frisch = skg.get_seasonal_frisch();
+                        let seasonal_gemuese_lager = skg.get_seasonal_lager();
                         match seasonal_gemuese_frisch {
                             None => {
                                 reply+= "Ein Fehler ist aufgetreten! Bitte versuche es Erneut, oder melde ihn (Fehlercode 1).";
@@ -111,8 +110,8 @@ async fn main() -> Result<(), Error> {
                         }
                     }
                     AllowedCommands::Obst => {
-                        let seasonal_obst_frisch = sko.get_seasonal_obst_frisch();
-                        let seasonal_obst_lager = sko.get_seasonal_obst_lager();
+                        let seasonal_obst_frisch = sko.get_seasonal_frisch();
+                        let seasonal_obst_lager = sko.get_seasonal_lager();
                         match seasonal_obst_frisch {
                             None => {
                                 reply+= "Ein Fehler ist aufgetreten! Bitte versuche es Erneut, oder melde ihn (Fehlercode 3).";
@@ -141,8 +140,8 @@ async fn main() -> Result<(), Error> {
                         }
                     }
                     AllowedCommands::Salat => {
-                        let seasonal_salat_frisch = sks.get_seasonal_salat_frisch();
-                        let seasonal_salat_lager = sks.get_seasonal_salat_lager();
+                        let seasonal_salat_frisch = sks.get_seasonal_frisch();
+                        let seasonal_salat_lager = sks.get_seasonal_lager();
                         match seasonal_salat_frisch {
                             None => {
                                 reply+= "Ein Fehler ist aufgetreten! Bitte versuche es Erneut, oder melde ihn (Fehlercode 5).";

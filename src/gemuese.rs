@@ -183,3 +183,39 @@ impl TryFrom<&str> for Salat {
         }
     }
 }
+
+impl From<Gemuese> for Obst {
+    fn from(_: Gemuese) -> Self {
+        panic!("This should never happen!")
+    }
+}
+
+impl From<Gemuese> for Salat {
+    fn from(_: Gemuese) -> Self {
+        panic!("This should never happen!")
+    }
+}
+
+impl From<Obst> for Gemuese {
+    fn from(_: Obst) -> Self {
+        panic!("This should never happen!")
+    }
+}
+
+impl From<Obst> for Salat {
+    fn from(_: Obst) -> Self {
+        panic!("This should never happen!")
+    }
+}
+
+impl From<Salat> for Gemuese {
+    fn from(_: Salat) -> Self {
+        panic!("This should never happen!")
+    }
+}
+
+impl From<Salat> for Obst {
+    fn from(_: Salat) -> Self {
+        panic!("This should never happen!")
+    }
+}
