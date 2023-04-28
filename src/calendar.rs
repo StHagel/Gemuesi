@@ -17,6 +17,7 @@ pub struct Saisonkalender<T: Hash + Eq + PartialEq> {
 impl<T: Hash + Eq + PartialEq + Clone + From<Gemuese> + From<Obst> + From<Salat>>
     Saisonkalender<T>
 {
+    #[inline]
     pub fn new() -> Saisonkalender<T> {
         let mut frisch: HashMap<T, Vec<Month>> = HashMap::new();
         let mut lagerware: HashMap<T, Vec<Month>> = HashMap::new();
@@ -30,6 +31,7 @@ impl<T: Hash + Eq + PartialEq + Clone + From<Gemuese> + From<Obst> + From<Salat>
         Saisonkalender { frisch, lagerware }
     }
 
+    #[inline]
     pub fn get_seasonal_frisch(&self) -> Option<Vec<T>> {
         let current_month = get_current_month()?;
 
@@ -43,6 +45,7 @@ impl<T: Hash + Eq + PartialEq + Clone + From<Gemuese> + From<Obst> + From<Salat>
         Some(seasonal)
     }
 
+    #[inline]
     pub fn get_seasonal_lager(&self) -> Option<Vec<T>> {
         let current_month = get_current_month()?;
 
@@ -56,11 +59,13 @@ impl<T: Hash + Eq + PartialEq + Clone + From<Gemuese> + From<Obst> + From<Salat>
         Some(lager)
     }
 
+    #[inline]
     pub fn get_months_for(&self, t: &T) -> Vec<Month> {
         self.frisch[t].clone()
     }
 }
 
+#[inline]
 fn get_current_month() -> Option<Month> {
     match chrono::Local::now().month() {
         1 => Some(January),
@@ -84,6 +89,7 @@ pub trait GermanString {
 }
 
 impl GermanString for Month {
+    #[inline]
     fn to_german_string(&self) -> String {
         match self {
             January => "Januar",
@@ -103,6 +109,7 @@ impl GermanString for Month {
     }
 }
 
+#[inline]
 const fn type_eq<T: ?Sized, U: ?Sized>() -> bool {
     // Helper trait. `VALUE` is false, except for the specialization of the
     // case where `T == U`.

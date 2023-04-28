@@ -24,12 +24,14 @@ enum AllowedCommands {
 }
 
 impl Default for AllowedCommands {
+    #[inline]
     fn default() -> Self {
         AllowedCommands::Other(String::from(""))
     }
 }
 
 impl From<String> for AllowedCommands {
+    #[inline]
     fn from(value: String) -> Self {
         let value = value.to_lowercase();
         let obst = "obst".to_owned();

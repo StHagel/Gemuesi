@@ -4,6 +4,7 @@ use std::hash::Hash;
 use time::Month;
 use time::Month::*;
 
+#[inline]
 pub fn fill_gemuese<T>(frisch: &mut HashMap<T, Vec<Month>>, lagerware: &mut HashMap<T, Vec<Month>>)
 where
     T: Eq + Hash + From<Gemuese>,
@@ -184,6 +185,7 @@ where
     );
 }
 
+#[inline]
 pub fn fill_obst<T>(frisch: &mut HashMap<T, Vec<Month>>, lagerware: &mut HashMap<T, Vec<Month>>)
 where
     T: Eq + Hash + From<Obst>,
@@ -220,6 +222,7 @@ where
     lagerware.insert(Obst::Birne.into(), vec![November, December]);
 }
 
+#[inline]
 pub fn fill_salat<T>(frisch: &mut HashMap<T, Vec<Month>>, lagerware: &mut HashMap<T, Vec<Month>>)
 where
     T: Eq + Hash + From<Salat>,

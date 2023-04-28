@@ -82,6 +82,7 @@ pub enum Salat {
 impl TryFrom<&str> for Gemuese {
     type Error = ();
 
+    #[inline]
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         match value {
             "aubergine" | "auberginen" => Ok(Gemuese::Aubergine),
@@ -138,6 +139,7 @@ impl TryFrom<&str> for Gemuese {
 impl TryFrom<&str> for Obst {
     type Error = ();
 
+    #[inline]
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         match value {
             "apfel" | "äpfel" => Ok(Obst::Apfel),
@@ -166,6 +168,7 @@ impl TryFrom<&str> for Obst {
 impl TryFrom<&str> for Salat {
     type Error = ();
 
+    #[inline]
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         match value {
             "batavia" => Ok(Salat::Batavia),
@@ -185,36 +188,42 @@ impl TryFrom<&str> for Salat {
 }
 
 impl From<Gemuese> for Obst {
+    #[inline]
     fn from(_: Gemuese) -> Self {
         panic!("This should never happen!")
     }
 }
 
 impl From<Gemuese> for Salat {
+    #[inline]
     fn from(_: Gemuese) -> Self {
         panic!("This should never happen!")
     }
 }
 
 impl From<Obst> for Gemuese {
+    #[inline]
     fn from(_: Obst) -> Self {
         panic!("This should never happen!")
     }
 }
 
 impl From<Obst> for Salat {
+    #[inline]
     fn from(_: Obst) -> Self {
         panic!("This should never happen!")
     }
 }
 
 impl From<Salat> for Gemuese {
+    #[inline]
     fn from(_: Salat) -> Self {
         panic!("This should never happen!")
     }
 }
 
 impl From<Salat> for Obst {
+    #[inline]
     fn from(_: Salat) -> Self {
         panic!("This should never happen!")
     }
