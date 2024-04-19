@@ -69,7 +69,10 @@ async fn main() -> Result<(), Error> {
     let mut stream = api.stream();
     while let Some(update) = stream.next().await {
         // If the received update contains a new message...
-        let update = update?;
+        let update = match update {
+            Ok(u) => u,
+            Err(_) => continue,
+        };
         if let UpdateKind::Message(message) = update.kind {
             if let MessageKind::Text { ref data, .. } = message.kind {
                 // Print received text message to stdout.
@@ -239,7 +242,7 @@ async fn main() -> Result<(), Error> {
                     }
                 }
 
-                api.send(message.text_reply(reply)).await?;
+                api.send(message.text_reply(reply)).await.unwrap();
             }
         }
     }
